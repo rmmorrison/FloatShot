@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import HotKey
 
 @main
 struct FloatShotApp: App {
@@ -25,9 +26,16 @@ struct FloatShotApp: App {
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    var screenshotHotKey: HotKey?
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
         Task {
             _ = try? await ScreenshotManager.shared.forcePermissionRequest()
+        }
+        
+        screenshotHotKey = HotKey(key: .s, modifiers: [.command, .shift])
+        screenshotHotKey?.keyDownHandler = {
+            ScreenshotManager.shared.startSelection()
         }
     }
 }

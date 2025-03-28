@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		70E0A2B02D9762CF00203C04 /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 70E0A2AF2D9762CF00203C04 /* HotKey */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		703896F42D95C01400253B79 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70E0A2B02D9762CF00203C04 /* HotKey in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = FloatShot;
 			packageProductDependencies = (
+				70E0A2AF2D9762CF00203C04 /* HotKey */,
 			);
 			productName = FloatShot;
 			productReference = 703896E22D95C01200253B79 /* FloatShot.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 703896D92D95C01200253B79;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				70E0A2AE2D9762CF00203C04 /* XCRemoteSwiftPackageReference "HotKey" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 703896E32D95C01200253B79 /* Products */;
 			projectDirPath = "";
@@ -547,6 +556,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		70E0A2AE2D9762CF00203C04 /* XCRemoteSwiftPackageReference "HotKey" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/soffes/HotKey";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		70E0A2AF2D9762CF00203C04 /* HotKey */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 70E0A2AE2D9762CF00203C04 /* XCRemoteSwiftPackageReference "HotKey" */;
+			productName = HotKey;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 703896DA2D95C01200253B79 /* Project object */;
 }
