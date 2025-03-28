@@ -10,13 +10,18 @@ import ScreenCaptureKit
 
 class ScreenshotManager {
     static let shared = ScreenshotManager()
+    private var overlayWindow: SelectionOverlayWindow?
     
     func startSelection() {
-        let overlay = SelectionOverlayWindow()
-        overlay.beginSelection { image in
+        guard overlayWindow == nil else { return } // don't allow another selection to take place if one is already in progress
+        
+        overlayWindow = SelectionOverlayWindow()
+        overlayWindow?.beginSelection { image in
             if let image = image {
                 ScreenshotWindowController.show(image: image)
             }
+            
+            self.overlayWindow = nil
         }
     }
     
