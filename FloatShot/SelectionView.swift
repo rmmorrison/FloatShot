@@ -87,6 +87,35 @@ class SelectionView: NSView {
                           width: abs(startPoint.x - currentPoint.x),
                           height: abs(startPoint.y - currentPoint.y))
         
-        onSelectionComplete?(rect)
+        // ignore selections that are too small
+        if rect.width >= 100 && rect.height >= 100 {
+            onSelectionComplete?(rect)
+        } else {
+            flashInvalidSelection(rect)
+        }
+    }
+    
+    private func flashInvalidSelection(_ rect: CGRect) {
+        let flashLayer = CAShapeLayer()
+        flashLayer.path = CGPath(rect: rect, transform: nil)
+        flashLayer.fillColor = NSColor.clear.cgColor
+        flashLayer.strokeColor = NSColor.red.cgColor
+        flashLayer.lineWidth = 2.0
+        flashLayer.opacity = 1.0
+        layer?.addSublayer(flashLayer)
+
+        let fade = CABasicAnimation(keyPath: "opacity")
+        fade.fromValue = 1.0
+        fade.toValue = 0.0
+        fade.duration = 0.3
+        fade.timingFunction = CAMediaTimingFunction(name: .easeOut)
+        fade.fillMode = .forwards
+        fade.isRemovedOnCompletion = false
+
+        flashLayer.add(fade, forKey: "flash")
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            flashLayer.removeFromSuperlayer()
+        }
     }
 }
