@@ -18,8 +18,15 @@ class ScreenshotWindowController: NSWindowController {
         let hosting = NSHostingView(rootView: contentView)
         hostingView = hosting
         
+        let mouseLocation = NSEvent.mouseLocation
+        let imageSize = image.size
+        let windowOrigin = CGPoint(
+            x: mouseLocation.x - imageSize.width,
+            y: mouseLocation.y
+        )
+        
         let window = NSWindow(
-            contentRect: NSRect(origin: .zero, size: image.size),
+            contentRect: NSRect(origin: windowOrigin, size: image.size),
             styleMask: [.borderless],
             backing: .buffered,
             defer: false)
