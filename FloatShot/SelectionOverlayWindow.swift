@@ -32,12 +32,20 @@ class SelectionOverlayWindow: NSWindow {
     }
     
     func beginSelection(completion: @escaping (NSImage?) -> Void) {
+        func convertToDisplayCoordinates(_ rect: CGRect) -> CGRect {
+            guard let screen = NSScreen.main else { return rect }
+            let flippedY = screen.frame.height - rect.origin.y - rect.height
+            return CGRect(x: rect.origin.x, y: flippedY, width: rect.width, height: rect.height)
+        }
+
         selectionHandler = completion
         selectionView.onSelectionComplete = { [weak self] rect in
             guard let self = self else { return }
             self.orderOut(nil)
             Task { @MainActor in
-                if let cgImage = try? await ScreenshotManager.shared.captureImage(in: rect) {
+                let displayRect = convertToDisplayCoordinates(rect)
+                if let cgImage = try? await ScreenshotManager.shared.captureImage(in: displayRect) {
+                    // Size the image in points (original selection size) for display
                     let image = NSImage(cgImage: cgImage, size: rect.size)
                     completion(image)
                 } else {
