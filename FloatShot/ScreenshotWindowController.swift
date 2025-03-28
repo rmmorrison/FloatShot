@@ -20,9 +20,10 @@ class ScreenshotWindowController: NSWindowController {
         
         let mouseLocation = NSEvent.mouseLocation
         let imageSize = image.size
+        let offset: CGFloat = 20
         let windowOrigin = CGPoint(
-            x: mouseLocation.x - imageSize.width,
-            y: mouseLocation.y
+            x: mouseLocation.x - imageSize.width + offset,
+            y: mouseLocation.y - offset
         )
         
         let window = NSWindow(
