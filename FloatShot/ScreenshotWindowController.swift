@@ -21,10 +21,18 @@ class ScreenshotWindowController: NSWindowController {
         let mouseLocation = NSEvent.mouseLocation
         let imageSize = image.size
         let offset: CGFloat = 20
-        let windowOrigin = CGPoint(
+        var windowOrigin = CGPoint(
             x: mouseLocation.x - imageSize.width + offset,
             y: mouseLocation.y - offset
         )
+        
+        // if the screenshot was taken near the corner of a display, be sure to
+        // render the frame within the bounds of the display
+        if let screen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) {
+            let screenFrame = screen.visibleFrame
+            windowOrigin.x = max(screenFrame.minX, min(windowOrigin.x, screenFrame.maxX - imageSize.width))
+            windowOrigin.y = max(screenFrame.minY, min(windowOrigin.y, screenFrame.maxY - imageSize.height))
+        }
         
         let window = NSWindow(
             contentRect: NSRect(origin: windowOrigin, size: image.size),
