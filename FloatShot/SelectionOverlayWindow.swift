@@ -10,32 +10,37 @@ import SwiftUI
 class SelectionOverlayWindow: NSWindow {
     private var selectionHandler: ((NSImage?) -> Void)? = nil
     private var selectionView: SelectionView!
-    
-    init() {
-        let screenSize = NSScreen.main?.frame ?? .zero
+    private var targetScreen: NSScreen
+
+    init(screen: NSScreen) {
+        self.targetScreen = screen
         super.init(
-            contentRect: screenSize,
+            contentRect: screen.frame,
             styleMask: [.borderless],
             backing: .buffered,
             defer: false
         )
-        
+
         self.isOpaque = false
         self.backgroundColor = NSColor.clear
         self.level = .mainMenu + 1
         self.ignoresMouseEvents = false
         self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         self.makeKeyAndOrderFront(nil)
-        
-        selectionView = SelectionView(frame: screenSize)
+
+        selectionView = SelectionView(frame: screen.frame)
         self.contentView = selectionView
     }
-    
+
     func beginSelection(completion: @escaping (NSImage?) -> Void) {
         func convertToDisplayCoordinates(_ rect: CGRect) -> CGRect {
-            guard let screen = NSScreen.main else { return rect }
-            let flippedY = screen.frame.height - rect.origin.y - rect.height
-            return CGRect(x: rect.origin.x, y: flippedY, width: rect.width, height: rect.height)
+            let flippedY = targetScreen.frame.height - rect.origin.y - rect.height
+            return CGRect(
+                x: rect.origin.x + targetScreen.frame.origin.x,
+                y: flippedY + targetScreen.frame.origin.y,
+                width: rect.width,
+                height: rect.height
+            )
         }
 
         selectionHandler = completion
@@ -45,7 +50,6 @@ class SelectionOverlayWindow: NSWindow {
             Task { @MainActor in
                 let displayRect = convertToDisplayCoordinates(rect)
                 if let cgImage = try? await ScreenshotManager.shared.captureImage(in: displayRect) {
-                    // Size the image in points (original selection size) for display
                     let image = NSImage(cgImage: cgImage, size: rect.size)
                     completion(image)
                 } else {
