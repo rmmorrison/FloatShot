@@ -49,7 +49,7 @@ class SelectionOverlayWindow: NSWindow {
             self.orderOut(nil)
             Task { @MainActor in
                 let displayRect = convertToDisplayCoordinates(rect)
-                if let cgImage = try? await ScreenshotManager.shared.captureImage(in: displayRect) {
+                if let cgImage = try? await ScreenshotManager.shared.captureImage(screen: self.targetScreen, rect: displayRect) {
                     let image = NSImage(cgImage: cgImage, size: rect.size)
                     completion(image)
                 } else {

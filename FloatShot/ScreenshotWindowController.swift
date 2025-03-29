@@ -10,7 +10,7 @@ import SwiftUI
 class ScreenshotWindowController: NSWindowController {
     private var hostingView: NSHostingView<ScreenshotView>?
     
-    func showWindow(for image: NSImage) {
+    func showWindow(screen: NSScreen, for image: NSImage) {
         let contentView = ScreenshotView(image: image, onClose: {
             self.window?.close()
         })
@@ -28,11 +28,9 @@ class ScreenshotWindowController: NSWindowController {
         
         // if the screenshot was taken near the corner of a display, be sure to
         // render the frame within the bounds of the display
-        if let screen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) {
-            let screenFrame = screen.visibleFrame
-            windowOrigin.x = max(screenFrame.minX, min(windowOrigin.x, screenFrame.maxX - imageSize.width))
-            windowOrigin.y = max(screenFrame.minY, min(windowOrigin.y, screenFrame.maxY - imageSize.height))
-        }
+        let screenFrame = screen.visibleFrame
+        windowOrigin.x = max(screenFrame.minX, min(windowOrigin.x, screenFrame.maxX - imageSize.width))
+        windowOrigin.y = max(screenFrame.minY, min(windowOrigin.y, screenFrame.maxY - imageSize.height))
         
         let window = NSWindow(
             contentRect: NSRect(origin: windowOrigin, size: image.size),
@@ -52,8 +50,8 @@ class ScreenshotWindowController: NSWindowController {
         self.window = window
     }
     
-    static func show(image: NSImage) {
+    static func show(screen: NSScreen, image: NSImage) {
         let controller = ScreenshotWindowController()
-        controller.showWindow(for: image)
+        controller.showWindow(screen: screen, for: image)
     }
 }

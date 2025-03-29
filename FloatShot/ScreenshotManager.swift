@@ -25,7 +25,7 @@ class ScreenshotManager {
                 completionCounter += 1
                 if let image = image, !selectionMade {
                     selectionMade = true
-                    ScreenshotWindowController.show(image: image)
+                    ScreenshotWindowController.show(screen: screen, image: image)
                     self.dismissAllOverlays()
                 } else if completionCounter == screens.count {
                     self.dismissAllOverlays()
@@ -40,25 +40,39 @@ class ScreenshotManager {
         overlayWindows.removeAll()
     }
 
-    func captureImage(in rect: CGRect) async throws -> CGImage? {
+    func captureImage(screen: NSScreen, rect: CGRect) async throws -> CGImage? {
         let config = SCStreamConfiguration()
         config.sourceRect = rect
         config.width = Int(rect.width)
         config.height = Int(rect.height)
+        
+        guard let screenDisplayID = screen.displayID else {
+            return nil
+        }
 
         guard let display = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
-            .displays.first(where: { $0.frame.contains(rect.origin) }) else {
+            .displays.first(where: { $0.displayID == screenDisplayID }) else {
             return nil
         }
 
         let filter = SCContentFilter(display: display, excludingWindows: [])
-
         return try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: config)
     }
 
     func forcePermissionRequest() async throws {
-        let screen = NSScreen.main?.frame ?? .zero
-        let dummyRect = CGRect(x: screen.midX - 1, y: screen.midY - 1, width: 1, height: 1)
-        _ = try await captureImage(in: dummyRect)
+        if let screen = NSScreen.main {
+            let frame = screen.frame
+            let dummyRect = CGRect(x: frame.midX - 1, y: frame.midY - 1, width: 1, height: 1)
+            _ = try await captureImage(screen: screen, rect: dummyRect)
+        }
+    }
+}
+
+extension NSScreen {
+    var displayID: CGDirectDisplayID? {
+        guard let screenNumber = deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber else {
+            return nil
+        }
+        return CGDirectDisplayID(screenNumber.uint32Value)
     }
 }
