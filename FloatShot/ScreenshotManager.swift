@@ -40,6 +40,7 @@ class ScreenshotManager {
         overlayWindows.removeAll()
     }
 
+    @MainActor
     func captureImage(screen: NSScreen, rect: CGRect) async throws -> CGImage? {
         let config = SCStreamConfiguration()
         config.sourceRect = rect
@@ -63,7 +64,9 @@ class ScreenshotManager {
         if let screen = NSScreen.main {
             let frame = screen.frame
             let dummyRect = CGRect(x: frame.midX - 1, y: frame.midY - 1, width: 1, height: 1)
-            _ = try await captureImage(screen: screen, rect: dummyRect)
+            Task { @MainActor in
+                _ = try await captureImage(screen: screen, rect: dummyRect)
+            }
         }
     }
 }
