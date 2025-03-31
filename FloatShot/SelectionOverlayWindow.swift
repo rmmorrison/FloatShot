@@ -53,7 +53,8 @@ class SelectionOverlayWindow: NSWindow {
                     let image = NSImage(cgImage: cgImage, size: rect.size)
                     completion(image)
                 } else {
-                    completion(nil)
+                    PermissionErrorViewController.show()
+                    ScreenshotManager.shared.dismissAllOverlays()
                 }
             }
         }

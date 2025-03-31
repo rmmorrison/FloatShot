@@ -35,7 +35,7 @@ class ScreenshotManager {
         }
     }
 
-    private func dismissAllOverlays() {
+    func dismissAllOverlays() {
         overlayWindows.forEach { $0.orderOut(nil) }
         overlayWindows.removeAll()
     }
@@ -64,7 +64,12 @@ class ScreenshotManager {
         // while SCStreamConfiguration allows us to set a 'sourceRect' of the area to capture,
         // it does so producing what appears to be a low resolution or 'blurry' screenshot.
         // we mitigate this by not defining a 'sourceRect' here and instead crop later
-        let fullImage = try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: config)
+        let fullImage: CGImage!
+        do {
+            fullImage = try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: config)
+        } catch {
+            throw error
+        }
 
         // convert source rectangle which was measured in points to pixels
         // multiply by display scale factor
